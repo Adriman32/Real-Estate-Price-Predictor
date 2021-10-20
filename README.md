@@ -25,7 +25,7 @@ The *createLayers* function will create every combination of layers given the in
 For the default example, this would result in 84 networks. These are then trained and tested, and the model with best performance will be saved.
 
 ### Pre-Trained Models
-The `models` folder included in the repository contains several different models of varying hidden layer sizes and MSE loss. Their filenames correspond to their layer size and MSE values. Use the included *runModel.py* program to test the different models. Below are 
+The `models` folder included in the repository contains several different models of varying hidden layer sizes and MSE loss. Their filenames correspond to their layer size and MSE values. Use the included *runModel.py* program to test the different models. Below are several plots achieved from the included networks.
 
 ![Figure 0](/plots/Figure_0.png)
 
