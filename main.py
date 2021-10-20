@@ -54,6 +54,57 @@ def annTrainer(x_train,y_train,hidden_layer_nodes,verbose=False):
 		print("MSE Loss:",ann_model.loss_)
 	return (ann_model)
 
+def createLayers(hidden_layer_nodes, max_layers):
+	counter = 0
+	arr_hoder = []
+
+	# Creates permutations of all nodes	and layers
+	for node in hidden_layer_nodes:
+		arr_hoder.append(node) 
+	if(max_layers > 1):
+		for x in range(0,max_layers-1):
+			for i in range(counter,len(arr_hoder)):
+				if(i == counter):
+					counter = len(arr_hoder)
+				for node in hidden_layer_nodes:
+					temp_arr = []
+					temp_arr.append(arr_hoder[i])
+					temp_arr.append(node)
+					arr_hoder.append(temp_arr)
+
+	# Converts from List of Lists to 1D lists
+	layer_arr = []
+	for layer in arr_hoder:
+		if(type(layer) == np.int32):
+			layer_arr.append(layer)
+		else:
+			ender = False
+			counter = 0
+			checker = layer.copy()
+			temp_arr = []
+			while(not(ender)):
+				if(type(checker) == np.int32):
+					temp_arr.append(checker)
+					ender = True
+				else:
+					flag = 0
+					counter = len(checker)
+					loc = 0
+					while(loc < counter):
+						if(type(checker[loc])==np.int32):
+							temp_arr.append(int(checker[loc]))
+							loc+=1
+						else:
+							holder = checker.copy()
+							checker = checker[loc]
+							flag = loc+1
+							loc = 0
+					if(flag > 0):
+						checker = holder[flag].copy()
+					else:
+						ender = True
+			layer_arr.append(temp_arr)		
+	return layer_arr
 
 
 def main():
@@ -74,56 +125,58 @@ def main():
 	x_train,y_train,x_test,y_test = splitDF(full_df)
 
 	
-
-	num_hidden_layers = np.array([1,2,3])
-	#hidden_layer_nodes = [0,1,2,4,8,16,32,64,128,256,512,1024]
-	hidden_layer_nodes = np.array([1,2,4])
-
-
-	for layer in num_hidden_layers:
-		for node in hidden_layer_nodes:
-			temp_array=[]
-			for i in range(0,layer):
-				temp_array.append(node)
-			print(temp_array)
-
+	#hidden_layer_nodes = np.array([1,2,4,8,16,32,64,128,256,512,1024])
+	max_hidden_layers = 3
+	hidden_layer_nodes = np.array([256,512,1024])
 	
+	model_arr = []
+	layer_arr = createLayers(hidden_layer_nodes, max_hidden_layers)
+	for layer in layer_arr:
+		model_arr.append(annTrainer(x_train,y_train,layer))
+
+	pred_arr = []
+	for model in model_arr:
+		pred_arr.append(model.predict(x_test))
+
+
+	mse_arr = []
+	diff_arr = []
+	for i in range(0,len(pred_arr)):
+		mse_arr.append(model_arr[i].loss_)
+
+	for i in range(0,len(y_test)):
+		diff_arr.append(np.mean(abs(y_test[i]-pred_arr[i])))
+
+	min_mse_loc = np.argmin(mse_arr)
+	min_diff_loc = np.argmin(diff_arr)
+
+	print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
+	print('Best Model (MSE):',model_arr[min_mse_loc])
+	print('MSE:', mse_arr[min_mse_loc])
+	print('Best Model (Diff):',model_arr[min_diff_loc])
+	print('Diff:', diff_arr[min_diff_loc])
+
+	plt.figure(1)
+	plt.plot(range(0,model_arr[min_mse_loc].n_iter_),model_arr[min_mse_loc].loss_curve_,label='MSE Loss')
+	plt.title('MSE Loss over 200 Iterations')
+	plt.xlabel('Epochs')
+	plt.ylabel('MSE')
+	plt.legend()
+
+	plt.figure(2)
+	plt.plot(range(0,len(diff_arr)),diff_arr,label = 'Avg Diff Per Model')
+	plt.plot(range(0,len(mse_arr)),mse_arr,label = 'MSE Per Model')
+	plt.title('Model Loss')
+	plt.xlabel('Model Number')
+	plt.ylabel('Average Difference')
+	plt.legend()
+	plt.show()
+
+		
+
 
 
 	'''
-	for layer in num_hidden_layers:
-		for node in hidden_layer_nodes:
-			temp_array=[]
-			for i in range(0,layer):
-				temp_array.append(node)
-			print(temp_array)
-	'''
-	'''
-	for i in num_hidden_layers:
-		total_hidden_layers = []
-		print("Reset")
-		for layers in range(0,i):
-			temp_layer = []
-			for nodes in hidden_layer_nodes:
-				temp_layer.append(nodes)
-			total_hidden_layers.append(temp_layer)
-		print(total_hidden_layers)
-	#print(total_hidden_layers)
-
-	'''
-	hidden_layer_nodes = [200,200,200]
-	ann_model = annTrainer(x_train,y_train,hidden_layer_nodes,verbose=True)
-	
-	pred = ann_model.predict(x_test)
-
-	temp=[]
-
-	for i in range(1,len(pred)):
-		temp.append(y_test[i]-pred[i])
-
-	print("\n\nMean Difference", np.mean(temp))
-	print("Max Difference", max(temp),"\n\n")
-
 	print("Predicted:", ann_model.predict(x_test[5].reshape(1,-1)),"Actual:",y_test[5])
 
 
@@ -134,22 +187,8 @@ def main():
 	plt.ylabel("Predicted Price Per Unit Area")
 	plt.legend()
 	plt.show()
-
-	'''
-	print("XTRAIN\n",x_train)
-	print("YTRAIN\n",y_train)	
-	print("XTEST\n",x_test)
-	print("YTEST\n",y_test)	
-	'''
-
-
-
-
 	
-
-
-
-
+	'''
 	print("Elapsed Time:",time.perf_counter()-start_time,"seconds.")
 
 if __name__ == '__main__':
