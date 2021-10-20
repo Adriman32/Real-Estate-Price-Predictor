@@ -27,10 +27,9 @@ For the default example, this would result in 84 networks. These are then traine
 ### Pre-Trained Models
 The `models` folder included in the repository contains several different models of varying hidden layer sizes and MSE loss. Their filenames correspond to their layer size and MSE values. Use the included *runModel.py* program to test the different models. Below are 
 
-![Figure 0](https://github.com/Adriman32/Real-Estate-Price-Predictor/tree/main/plots/Figure_0.png)
+![Figure 0](/plots/Figure_0.png)
 
-![Figure 1](https://github.com/Adriman32/Real-Estate-Price-Predictor/tree/main/plots/Figure_1.png)
-
+![Figure 1](/plots/Figure_1.png)
 
 
 
