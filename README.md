@@ -8,16 +8,16 @@ Predicting the Price Per Square Area of houses using Multi-Layer Perceptron Arti
 - Model with least Mean Square Error loss will be selected and saved
 - Plots showing losses over time displayed
 
+# Requirements
+- Python
+- requirements.txt (included)
+
+
 # How To Use
 In your console, navigate to desired directory and enter the following
 - git clone https://github.com/Adriman32/Real-Estate-Price-Predictor.git
 - cd Real-Estate-Price-Predictor
 - pip install -r requirements.txt
-
-# Requirements
-- Python
-- requirements.txt (included)
-
 
 
 Running 'main.py' will begin the training of networks with the given data. The default settings for the training are hidden_nodes = [50,128,256,512], and max_hidden_layer_size = 3.
