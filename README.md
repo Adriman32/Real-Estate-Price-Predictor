@@ -35,5 +35,5 @@ The `models` folder included in the repository contains several different models
 
 
 
-Using Real estate dataset from https://www.kaggle.com/alexanderliapatis/nn-regression-real-estate
+Using Real Estate dataset from https://www.kaggle.com/alexanderliapatis/nn-regression-real-estate
 
