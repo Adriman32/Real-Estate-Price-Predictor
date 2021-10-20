@@ -11,7 +11,7 @@ Predicting the Price Per Square Area of houses using Multi-Layer Perceptron Arti
 # How To Use
 In your console, navigate to desired directory and enter the following
 - git clone https://github.com/Adriman32/Real-Estate-Price-Predictor.git
-- cd Real-Estate-Predictor
+- cd Real-Estate-Price-Predictor
 - pip install -r requirements.txt
 
 # Requirements
