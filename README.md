@@ -20,12 +20,12 @@ In your console, navigate to desired directory and enter the following
 - pip install -r requirements.txt
 
 
-Running 'main.py' will begin the training of networks with the given data. The default settings for the training are hidden_nodes = [50,128,256,512], and max_hidden_layer_size = 3.
+Running ***main.py*** will begin the training of networks with the given data. The default settings for the training are hidden_nodes = [50,128,256,512], and max_hidden_layer_size = 3.
 The *createLayers* function will create every combination of layers given the inputs. The number of layers that will be created is equal to `x^1 + x^2 +...+ x^n` where `x = len(hidden_nodes)` and `n = max_hidden_layer_size`
 For the default example, this would result in 84 networks. These are then trained and tested, and the model with best performance will be saved.
 
 ### Pre-Trained Models
-The `models` folder included in the repository contains several different models of varying hidden layer sizes and MSE loss. Their filenames correspond to their layer size and MSE values. Use the included *runModel.py* program to test the different models. Below are several plots achieved from the included networks.
+The `models` folder included in the repository contains several different models of varying hidden layer sizes and MSE loss. Their filenames correspond to their layer size and MSE values. Use the included ***runModel.py*** program to test the different models. Below are several plots achieved from the included networks.
 
 ![Figure 0](/plots/Figure_0.png)
 
