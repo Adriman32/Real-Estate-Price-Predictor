@@ -5,6 +5,7 @@ import sklearn.preprocessing as preproc
 import matplotlib.pyplot as plt
 import time
 import random
+import pickle
 
 
 def dataFrameFromFile(filename,verbose=True):
@@ -43,9 +44,14 @@ def splitDF(df,test_size=0.3,verbose=False):
 
 	return (x_train,y_train,x_test,y_test)
 
+def saveModel(model):
+	str_layers = str(model.hidden_layer_sizes)
+	filename = 'MLP_' + str_layers + "_MSE_" + str(model.loss_)
+	pickle.dump(model,open(filename,'wb'))
+
 
 def annTrainer(x_train,y_train,hidden_layer_nodes,verbose=False):
-	ann_model = nnet.MLPRegressor(hidden_layer_sizes=(hidden_layer_nodes),activation='relu',max_iter=200,random_state=42)
+	ann_model = nnet.MLPRegressor(hidden_layer_sizes=(hidden_layer_nodes),activation='relu',max_iter=mlp_iterations,random_state=42)
 	ann_model = ann_model.fit(x_train,y_train.ravel())
 	#print(ann_model)
 	if(verbose):
@@ -107,6 +113,7 @@ def createLayers(hidden_layer_nodes, max_layers):
 	return layer_arr
 
 
+mlp_iterations = 2000
 def main():
 	start_time = time.perf_counter()
 	filename = "data.csv"
@@ -124,15 +131,16 @@ def main():
 
 	x_train,y_train,x_test,y_test = splitDF(full_df)
 
-	
 	#hidden_layer_nodes = np.array([1,2,4,8,16,32,64,128,256,512,1024])
+	hidden_layer_nodes = np.array([50,128,256,512])
 	max_hidden_layers = 3
-	hidden_layer_nodes = np.array([256,512,1024])
 	
 	model_arr = []
 	layer_arr = createLayers(hidden_layer_nodes, max_hidden_layers)
 	for layer in layer_arr:
+		print('\nNow Training With Hidden Layer Sizes: ', layer)
 		model_arr.append(annTrainer(x_train,y_train,layer))
+
 
 	pred_arr = []
 	for model in model_arr:
@@ -143,22 +151,29 @@ def main():
 	diff_arr = []
 	for i in range(0,len(pred_arr)):
 		mse_arr.append(model_arr[i].loss_)
-
-	for i in range(0,len(y_test)):
 		diff_arr.append(np.mean(abs(y_test[i]-pred_arr[i])))
+		
 
 	min_mse_loc = np.argmin(mse_arr)
 	min_diff_loc = np.argmin(diff_arr)
 
-	print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
-	print('Best Model (MSE):',model_arr[min_mse_loc])
+	best_mse_model = model_arr[min_mse_loc]
+	best_diff_model = model_arr[min_diff_loc]
+	saveModel(best_mse_model)
+
+	print('Best Model (MSE):',best_mse_model)
 	print('MSE:', mse_arr[min_mse_loc])
-	print('Best Model (Diff):',model_arr[min_diff_loc])
+	print('Best Model (Diff):',best_diff_model)
 	print('Diff:', diff_arr[min_diff_loc])
 
+	test_val = random.randint(0,len(x_test))
+	print("Predicted:", best_mse_model.predict(x_test[test_val].reshape(1,-1)),"Actual:",y_test[test_val])
+	
+
 	plt.figure(1)
-	plt.plot(range(0,model_arr[min_mse_loc].n_iter_),model_arr[min_mse_loc].loss_curve_,label='MSE Loss')
-	plt.title('MSE Loss over 200 Iterations')
+	plt.plot(range(0,best_mse_model.n_iter_),best_mse_model.loss_curve_,label='MSE Loss')
+	str_layers = str(best_mse_model.hidden_layer_sizes)
+	plt.title('MLP Size: '+ str_layers + ' Iterations: ' + str(mlp_iterations))
 	plt.xlabel('Epochs')
 	plt.ylabel('MSE')
 	plt.legend()
@@ -166,29 +181,12 @@ def main():
 	plt.figure(2)
 	plt.plot(range(0,len(diff_arr)),diff_arr,label = 'Avg Diff Per Model')
 	plt.plot(range(0,len(mse_arr)),mse_arr,label = 'MSE Per Model')
-	plt.title('Model Loss')
+	plt.title('Loss Per Model')
 	plt.xlabel('Model Number')
 	plt.ylabel('Average Difference')
 	plt.legend()
-	plt.show()
+	#plt.show()
 
-		
-
-
-
-	'''
-	print("Predicted:", ann_model.predict(x_test[5].reshape(1,-1)),"Actual:",y_test[5])
-
-
-	plt.scatter(y_test,pred,label="Predictions")
-	plt.plot(y_test,y_test,'r',label="Actual")
-	plt.title("House Price Per Unit Area")
-	plt.xlabel("Actual Price Per Unit Area")
-	plt.ylabel("Predicted Price Per Unit Area")
-	plt.legend()
-	plt.show()
-	
-	'''
 	print("Elapsed Time:",time.perf_counter()-start_time,"seconds.")
 
 if __name__ == '__main__':
